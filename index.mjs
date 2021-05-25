@@ -115,8 +115,8 @@ function render(st){
     };
   }
 
-  // getting the coordinates of the coin
-  interact.getCoin = async (state) => {
+  // getting the index of a unused hex
+  interact.getHex = async (state) => {
     console.log();
     const row = await ask(`What is the row of the coin`, (x) => {
         const row = x;

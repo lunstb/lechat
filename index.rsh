@@ -57,7 +57,7 @@ function getValidCatMove(interact, st){
 
 //makes sure the blocker move is valid
 function getValidBlockMove(interact, st){
-  const _blockMove = interact.getMove(st);
+  const _blockMove = interact.getHex(st);
   //todo, make sure block move is within array, not on exisiting block or cat
   return declassify(_blockMove);
 }
@@ -77,10 +77,6 @@ function applyBlockerMove(st, m){
   };
 }
 
-//need to change this function
-const winner = (coinA, coinB) =>
-      (coinA + coinB);
-
 //the player object
 const Player =
       { ...hasRandom,
@@ -92,13 +88,12 @@ const Player =
 const Alice =
       { ...Player,
         getMove: Fun([State], UInt),
-        wager: UInt,
-        index: UInt};
+        wager: UInt,};
 
 //Bob the blocker
 const Bob =
       { ...Player,
-        getCoin: Fun([State], UInt),
+        getHex: Fun([State], UInt),
         acceptWager: Fun([UInt], Null) };
 
 const DEADLINE = 10;
@@ -140,7 +135,7 @@ export const main =
          B.only(() => {
           const blockMove = getValidBlockMove(interact, state); });
         B.publish(blockMove);
-        state = applyCatMove(state, blockMove);
+        state = applyBlockerMove(state, blockMove);
         continue;
         }
 
