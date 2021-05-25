@@ -44,7 +44,8 @@ const catEscaped = (st) => {
 const catBlocked = (st) =>{
   //checks if there are blocks ro the right, left, below, and above
   return st.blockers[st.catIndex - 1] && st.blockers[st.catIndex + 1] && 
-  st.blockers[st.catIndex - ROWS] && st.blockers[st.catIndex + ROWS]; 
+  st.blockers[st.catIndex - ROWS] && st.blockers[st.catIndex + ROWS] &&
+  st.blockers[st.catIndex - ROWS + 1] && st.blockers[st.catIndex + ROWS - 1]; 
 }
 
 //makes sure the cat move is valid
@@ -84,7 +85,8 @@ const winner = (coinA, coinB) =>
 const Player =
       { ...hasRandom,
         seeOutcome: Fun([UInt], Null),
-        informTimeout: Fun([], Null) };
+        informTimeout: Fun([], Null),
+        doneState: Fun([State], Null) };
 
 //Alice the cat
 const Alice =
@@ -142,19 +144,12 @@ export const main =
         continue;
         }
 
-        const outcome = 30;
- 
-      // todo, delete this stuff. just here to make compiler happy
-      if(outcome > 100){
-        transfer(2 * wager).to(A);
-      }
-      else{
-        transfer(2 * wager).to(B);
-      }
-      
-      commit();
-
+        //paying out the wagers
+        const [toA, toB] = (catEscaped(state) ? [2, 0] : [0, 2])
+        transfer(toA * wager).to(A);
+        transfer(toB * wager).to(B);
+        commit();
       //displaying the outcome to both players
       each([A, B], () => {
-        interact.seeOutcome(outcome); });
+        interact.doneState(state, catEscaped(state)); });
       exit(); });

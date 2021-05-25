@@ -6,7 +6,9 @@ function render(st){
  let visual = '\n\t';
  let cnt = 0;
  for(let i = 0; i < 11; i++){
-
+    if(i % 2 == 1){
+      visual += ' ';
+    }
    for(let j = 0; j < 11; j++){
     if(st.blockers[cnt]){
       visual += 'b'
@@ -21,6 +23,7 @@ function render(st){
    }
    visual += '\n'
  }
+ return visual;
 }
 
 (async () => {
@@ -154,9 +157,28 @@ function render(st){
     console.log(`You played row: ${row} col: ${col}`);
     return row*col;
   };
-  //seeing the outcome, not correct because there is no game
-  interact.seeOutcome = async (outcome) => {
-    console.log(`There is no outcome because the game is not made}`);
+  
+  //printing the reusults of the game to the players
+  interact.doneState = async (st, catEscaped) => {
+    console.log(`Game over the final state is ${render(st)}`);
+    if(catEscaped){
+      console.log(`The cat has escaped.`);
+      if(isAlice){
+        console.log(`You won. Bob lost.`)
+      }
+      else{
+        console.log(`You lost. Alice won`)
+      }
+    }
+    else{
+      console.log(`The cat has been blocked.`);
+      if(isAlice){
+        console.log(`You won. Alice lost.`)
+      }
+      else{
+        console.log(`You lost. Bob won`)
+      }
+    }
   };
 
   const part = isAlice ? backend.Alice : backend.Bob;
