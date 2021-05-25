@@ -2,6 +2,27 @@ import { loadStdlib } from '@reach-sh/stdlib';
 import * as backend from './build/index.main.mjs';
 import { ask, yesno, done } from '@reach-sh/stdlib/ask.mjs';
 
+function render(st){
+ let visual = '\n\t';
+ let cnt = 0;
+ for(let i = 0; i < 11; i++){
+
+   for(let j = 0; j < 11; j++){
+    if(st.blockers[cnt]){
+      visual += 'b'
+    }
+    else if(cnt == st.catIndex){
+      visual += 'c'
+    }
+    else{
+      visual += 'o'
+    }
+    cnt++;
+   }
+   visual += '\n'
+ }
+}
+
 (async () => {
   const stdlib = await loadStdlib();
 
@@ -91,9 +112,31 @@ import { ask, yesno, done } from '@reach-sh/stdlib/ask.mjs';
     };
   }
 
-
   // getting the coordinates of the coin
-  interact.getCoin = async () => {
+  interact.getCoin = async (state) => {
+    console.log();
+    const row = await ask(`What is the row of the coin`, (x) => {
+        const row = x;
+      if ( row < 1 || row > 11 ) {
+        throw Error(`Not a valid row`);
+      }
+      return row;
+    });
+    const col = await ask(`What is the column of the coin`, (x) => {
+        const col = x;
+        if ( col < 1 || col > 11 ) {
+          throw Error(`Not a valid column`);
+        }
+        return col;
+      });
+    console.log(`You played row: ${row} col: ${col}`);
+    
+    return row*col;
+  };
+
+  //getting the move of the cat, up, down, left, or right. todo
+  interact.getMove = async (state) => {
+    console.log();
     const row = await ask(`What is the row of the coin`, (x) => {
         const row = x;
       if ( row < 1 || row > 11 ) {
@@ -111,7 +154,6 @@ import { ask, yesno, done } from '@reach-sh/stdlib/ask.mjs';
     console.log(`You played row: ${row} col: ${col}`);
     return row*col;
   };
-
   //seeing the outcome, not correct because there is no game
   interact.seeOutcome = async (outcome) => {
     console.log(`There is no outcome because the game is not made}`);

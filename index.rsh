@@ -1,15 +1,80 @@
 'reach 0.1';
+'use strict'
 
-//board dimensions
 const ROWS = 11;
 const COLS = 11;
 const CELLS = ROWS * COLS;
-
-//true if spot is not available, false otherwise
 const Board = Array(Bool, CELLS);
 
-//the board will be empty at the start
-const boardAtStart = Array.replicate(121, false);
+//the state consists of the index of the cat, and the array of blockers
+const State = Object({catIndex: UInt, 
+                      blockers: Board });
+
+const boardEmpty = Array.replicate(CELLS, false);
+
+const startCat = 60;
+
+//initializes the board
+const boardInit = () => ({
+                  catIndex: startCat,
+                  blockers: boardEmpty })
+
+// checks to see if the cell is being used on the other array
+const cellBoth = (st, i) => (st.catIndex == i || st.blockers[i]);
+
+// checks to see if the cat has escaped given its index
+const catEscaped = (st) => {
+  const i = st.catIndex;
+  //checks to see if the cat is on top or bottom row
+  if(i < COLS || i >= ROWS * (COLS - 1)){
+    return true;
+  }
+  //checks to see if the cat is in left or right column
+  else if(i % COLS == 0 || i % COLS == COLS - 1){
+    return true;
+  }
+  // the cat has not escaped
+  else{
+    return false;
+  }
+}
+
+//checks if the cat is blocked
+// Precondtion: cat must not be on the edge (escaped already)
+const catBlocked = (st) =>{
+  //checks if there are blocks ro the right, left, below, and above
+  return st.blockers[st.catIndex - 1] && st.blockers[st.catIndex + 1] && 
+  st.blockers[st.catIndex - ROWS] && st.blockers[st.catIndex + ROWS]; 
+}
+
+//makes sure the cat move is valid
+function getValidCatMove(interact, st){
+  const _catMove = interact.getMove(st);
+  //todo, make sure the cat move is not on block or same spot. in array. adjust getMove
+  return declassify(_catMove);
+}
+
+//makes sure the blocker move is valid
+function getValidBlockMove(interact, st){
+  const _blockMove = interact.getMove(st);
+  //todo, make sure block move is within array, not on exisiting block or cat
+  return declassify(_blockMove);
+}
+// applies the cat move to the board state
+function applyCatMove(st, i){
+  return {
+    catIndex: i,
+    blockers: st.blockers
+  };
+}
+
+//applies the blocker move the board state
+function applyBlockerMove(st, m){
+  return {
+    catIndex: st.catIndex,
+    blockers: st.blockers.set(m, true)
+  };
+}
 
 //need to change this function
 const winner = (coinA, coinB) =>
@@ -18,18 +83,20 @@ const winner = (coinA, coinB) =>
 //the player object
 const Player =
       { ...hasRandom,
-        getCoin: Fun([], UInt),
         seeOutcome: Fun([UInt], Null),
         informTimeout: Fun([], Null) };
 
 //Alice the cat
 const Alice =
       { ...Player,
-        wager: UInt };
+        getMove: Fun([State], UInt),
+        wager: UInt,
+        index: UInt};
 
 //Bob the blocker
 const Bob =
       { ...Player,
+        getCoin: Fun([State], UInt),
         acceptWager: Fun([UInt], Null) };
 
 const DEADLINE = 10;
@@ -54,33 +121,30 @@ export const main =
       B.pay(wager)
         .timeout(DEADLINE, () => closeTo(A, informTimeout));
 
-        commit();
+        var state = boardInit();
+        invariant(balance() == 2 * wager)
 
-        A.only(() => {
-          const _coinA = interact.getCoin();
-          const [_commitA, _saltA] = makeCommitment(interact, _coinA);
-          const commitA = declassify(_commitA); });
-        A.publish(commitA)
-          .timeout(DEADLINE, () => closeTo(B, informTimeout));
-        commit();
+        //game plays when cat has not escaped and not been blocked
+        while(!catEscaped(state) || !catBlocked(state)){
+          commit();
 
-        unknowable(B, A(_coinA, _saltA));
-        B.only(() => {
-          const coinB = declassify(interact.getCoin()); });
-        B.publish(coinB)
-          .timeout(DEADLINE, () => closeTo(A, informTimeout));
-        commit();
+         A.only(() => {
+           const catMove = getValidCatMove(interact, state); });
+         A.publish(catMove);
 
-        A.only(() => {
-          const [saltA, coinA] = declassify([_saltA, _coinA]); });
-        A.publish(saltA, coinA)
-          .timeout(DEADLINE, () => closeTo(B, informTimeout));
-        checkCommitment(commitA, saltA, coinA);
+         state = applyCatMove(state, catMove);
+         commit();
 
-        const outcome = winner(coinA, coinB);
+         B.only(() => {
+          const blockMove = getValidBlockMove(interact, state); });
+        B.publish(blockMove);
+        state = applyCatMove(state, blockMove);
+        continue;
+        }
+
+        const outcome = 30;
  
-
-      // transfering based on an arbituary rule
+      // todo, delete this stuff. just here to make compiler happy
       if(outcome > 100){
         transfer(2 * wager).to(A);
       }
