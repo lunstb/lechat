@@ -115,89 +115,44 @@ function render(st){
     };
   }
 
-  // getting the index of a unused hex
-  interact.getHex = async (state) => {
-    console.log();
-    const row = await ask(`What is the row of the coin`, (x) => {
-        const row = x;
-      if ( row < 1 || row > 11 ) {
-        throw Error(`Not a valid row`);
+   // getting the index of a unused hex
+   interact.getHex = async (state) => {
+    console.log(`The current state is ${render(state)}`);
+    const index = await ask(`What is the index you want to put the hex?`, (x) => {
+        const index = x;
+      if ( index < 0 || index > 120 ) {
+        throw Error(`Location must be between Row: 0-11 and Col: 0-11`);
+      } else if (index = state.catIndex) {
+        throw Error(`The cat is on that hex`);
+      } else if (state.blockers[index]) {
+        throw Error(`A block already exists on that hex`);
+      } else {
+        return index;
       }
-      return row;
     });
-    const col = await ask(`What is the column of the coin`, (x) => {
-        const col = x;
-        if ( col < 1 || col > 11 ) {
-          throw Error(`Not a valid column`);
-        }
-        return col;
-      });
-    console.log(`You played row: ${row} col: ${col}`);
-    
-    return row*col;
   };
 
   //getting the move of the cat, up, down, left, or right. todo
   interact.getMove = async (state) => {
-    console.log();
-    const row = await ask(`What is the row of the coin`, (x) => {
-        const row = x;
-      if ( row < 1 || row > 11 ) {
-        throw Error(`Not a valid row`);
-      }
-      return row;
-    });
-   
-   
-   
-     interact.getHex = async (state) => {
-    console.log();
-    const product = await ask(`What is the (row * 11) + (column - 1) of where you want to put the hex?`, (x) => {
-        const product = x;
-      if ( product < 0 || product > 120 ) {
-        throw Error(`Not a valid location`);
-      } else if (product = state.catIndex) {
-        throw Error(`Not a valid location`);
-      } else if (state.blockers[product] == true) {
-        throw Error(`Not a valid location`);
-      } else {
-        return product;
-      }
-    });
-      
-      
-    const col = await ask(`What is the column of the coin`, (x) => {
-        const col = x;
-        if ( col < 1 || col > 11 ) {
-          throw Error(`Not a valid column`);
-        }
-        return col;
-      });
-    console.log(`You played row: ${row} col: ${col}`);
-    return row*col;
+    console.log(`The current state is ${render(state)}`);
+    const index = await ask(`What is the index you want to move the cat?`, (x) => {
+      const index = x;
+    if ( index < 0 || index > 120 ) {
+      throw Error(`Location must be between Row: 0-11 and Col: 0-11`);
+    } else if (index = state.catIndex) {
+      throw Error(`The cat is already on that hex`);
+    } else if (state.blockers[index]) {
+      throw Error(`A block already exists on that hex`);
+    } else {
+      return index;
+    }
+  });
   };
   
   //printing the reusults of the game to the players
-  interact.doneState = async (st, catEscaped) => {
+  //this code can be made prettier
+  interact.doneState = async (st) => {
     console.log(`Game over the final state is ${render(st)}`);
-    if(catEscaped){
-      console.log(`The cat has escaped.`);
-      if(isAlice){
-        console.log(`You won. Bob lost.`)
-      }
-      else{
-        console.log(`You lost. Alice won`)
-      }
-    }
-    else{
-      console.log(`The cat has been blocked.`);
-      if(isAlice){
-        console.log(`You won. Alice lost.`)
-      }
-      else{
-        console.log(`You lost. Bob won`)
-      }
-    }
   };
 
   const part = isAlice ? backend.Alice : backend.Bob;

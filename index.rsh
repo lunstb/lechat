@@ -19,9 +19,6 @@ const boardInit = () => ({
                   catIndex: startCat,
                   blockers: boardEmpty })
 
-// checks to see if the cell is being used on the other array
-const cellBoth = (st, i) => (st.catIndex == i || st.blockers[i]);
-
 // checks to see if the cat has escaped given its index
 const catEscaped = (st) => {
   const i = st.catIndex;
@@ -42,6 +39,11 @@ const catEscaped = (st) => {
 //checks if the cat is blocked
 // Precondtion: cat must not be on the edge (escaped already)
 const catBlocked = (st) =>{
+  assert(!catEscaped(st));
+  assert(st.catIndex % COLS != 0);
+  assert(st.catIndex % COLS != COLS - 1);
+  assert(st.catIndex > COLS);
+  assert(st.catIndex < ROWS * (COLS - 1));
   //checks if there are blocks ro the right, left, below, and above
   return st.blockers[st.catIndex - 1] && st.blockers[st.catIndex + 1] && 
   st.blockers[st.catIndex - ROWS] && st.blockers[st.catIndex + ROWS] &&
@@ -50,6 +52,8 @@ const catBlocked = (st) =>{
 
 //makes sure the cat move is valid
 function getValidCatMove(interact, st){
+  assert(st.catIndex >= 0);
+  assert(st.catIndex <= 120);
   const _catMove = interact.getMove(st);
   //todo, make sure the cat move is not on block or same spot. in array. adjust getMove
   return declassify(_catMove);
@@ -128,14 +132,14 @@ export const main =
          A.only(() => {
            const catMove = getValidCatMove(interact, state); });
          A.publish(catMove);
-
-         state = applyCatMove(state, catMove);
+         
+         const state2 = applyCatMove(state, catMove);
          commit();
 
          B.only(() => {
-          const blockMove = getValidBlockMove(interact, state); });
+          const blockMove = getValidBlockMove(interact, state2); });
         B.publish(blockMove);
-        state = applyBlockerMove(state, blockMove);
+        state = applyBlockerMove(state2, blockMove);
         continue;
         }
 
@@ -146,5 +150,5 @@ export const main =
         commit();
       //displaying the outcome to both players
       each([A, B], () => {
-        interact.doneState(state, catEscaped(state)); });
+        interact.doneState(state); });
       exit(); });
