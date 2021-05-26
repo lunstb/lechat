@@ -147,6 +147,25 @@ function render(st){
       }
       return row;
     });
+   
+   
+   
+     interact.getHex = async (state) => {
+    console.log();
+    const product = await ask(`What is the row * column of where you want to put the hex?`, (x) => {
+        const product = x;
+      if ( product < 0 || product > 120 ) {
+        throw Error(`Not a valid location`);
+      } else if (product = state.catIndex) {
+        throw Error(`Not a valid location`);
+      } else if (state.blockers[product] == true) {
+        throw Error(`Not a valid location`);
+      } else {
+        return product;
+      }
+    });
+      
+      
     const col = await ask(`What is the column of the coin`, (x) => {
         const col = x;
         if ( col < 1 || col > 11 ) {
