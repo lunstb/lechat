@@ -152,7 +152,7 @@ function render(st){
    
      interact.getHex = async (state) => {
     console.log();
-    const product = await ask(`What is the row * column of where you want to put the hex?`, (x) => {
+    const product = await ask(`What is the (row * 11) + (column - 1) of where you want to put the hex?`, (x) => {
         const product = x;
       if ( product < 0 || product > 120 ) {
         throw Error(`Not a valid location`);
