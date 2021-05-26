@@ -1,5 +1,4 @@
 'reach 0.1';
-'use strict'
 
 const ROWS = 11;
 const COLS = 11;
@@ -39,11 +38,14 @@ const catEscaped = (st) => {
 //checks if the cat is blocked
 // Precondtion: cat must not be on the edge (escaped already)
 const catBlocked = (st) =>{
-  assert(!catEscaped(st));
+  /*assert(!catEscaped(st));
   assert(st.catIndex % COLS != 0);
   assert(st.catIndex % COLS != COLS - 1);
   assert(st.catIndex > COLS);
   assert(st.catIndex < ROWS * (COLS - 1));
+  assert(st.catIndex >= 0);
+  assert(st.catIndex <= 120);*/
+
   //checks if there are blocks ro the right, left, below, and above
   return st.blockers[st.catIndex - 1] && st.blockers[st.catIndex + 1] && 
   st.blockers[st.catIndex - ROWS] && st.blockers[st.catIndex + ROWS] &&
@@ -52,8 +54,8 @@ const catBlocked = (st) =>{
 
 //makes sure the cat move is valid
 function getValidCatMove(interact, st){
-  assert(st.catIndex >= 0);
-  assert(st.catIndex <= 120);
+  //assert(st.catIndex >= 0);
+  //assert(st.catIndex <= 120);
   const _catMove = interact.getMove(st);
   //todo, make sure the cat move is not on block or same spot. in array. adjust getMove
   return declassify(_catMove);
@@ -123,7 +125,7 @@ export const main =
         .timeout(DEADLINE, () => closeTo(A, informTimeout));
 
         var state = boardInit();
-        invariant(balance() == 2 * wager)
+        invariant(balance() == 2 * wager && state.catIndex < 121)
 
         //game plays when cat has not escaped and not been blocked
         while(!catEscaped(state) || !catBlocked(state)){
