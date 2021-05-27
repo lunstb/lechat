@@ -65,6 +65,7 @@ function getValidBlockMove(interact, st){
 }
 // applies the cat move to the board state
 function applyCatMove(st, i){
+  require(!catBlocked(st));
   return {
     catIndex: i,
     blockers: st.blockers
@@ -75,6 +76,8 @@ function applyCatMove(st, i){
 function applyBlockerMove(st, m){
   require(!catEscaped(st));
   require(m < 121);
+  //require(st.blockers.length == 121);
+
   return {
     catIndex: st.catIndex,
     blockers: st.blockers.set(m, true)
@@ -148,8 +151,8 @@ export const main =
         state = applyBlockerMove(state2, blockMove);
         continue;
         }
-
         //paying out the wagers
+        assert(catEscaped(state) || catBlocked(state));
         const [toA, toB] = (catEscaped(state) ? [2, 0] : [0, 2])
         transfer(toA * wager).to(A);
         transfer(toB * wager).to(B);
