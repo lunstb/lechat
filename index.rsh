@@ -59,6 +59,7 @@ function getValidCatMove(interact, st){
 //makes sure the blocker move is valid
 function getValidBlockMove(interact, st){
   const _blockMove = interact.getHex(st);
+  assume(_blockMove < 121);
   //todo, make sure block move is within array, not on exisiting block or cat
   return declassify(_blockMove);
 }
@@ -143,6 +144,7 @@ export const main =
          B.only(() => {
           const blockMove = getValidBlockMove(interact, state2); });
         B.publish(blockMove);
+        
         state = applyBlockerMove(state2, blockMove);
         continue;
         }
