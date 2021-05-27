@@ -74,7 +74,7 @@ function applyCatMove(st, i){
 
 //applies the blocker move the board state
 function applyBlockerMove(st, m){
-  require(!catEscaped(st));
+  //require(!catEscaped(st));
   require(m < 121);
   //require(st.blockers.length == 121);
 
@@ -131,7 +131,7 @@ export const main =
         .timeout(DEADLINE, () => closeTo(A, informTimeout));
 
         var state = boardInit();
-        invariant(balance() == 2 * wager && state.catIndex < 121)
+        invariant(balance() == 2 * wager);
 
         //game plays when cat has not escaped and not been blocked
         while(!gameOver(state)){
