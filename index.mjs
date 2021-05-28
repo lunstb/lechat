@@ -118,6 +118,7 @@ function render(st){
    // getting the index of a unused hex
    interact.getHex = async (state) => {
     console.log(`The current state is ${render(state)}`);
+    console.log(`The current cat location is  ${state.catIndex}`);
     const index = await ask(`What is the index you want to put the hex?`, (x) => {
         const index = x;
       if ( index < 0 || index > 120 ) {
@@ -138,28 +139,30 @@ function render(st){
   //getting the move for the cat. todo, make it only be able move one hex eacch
   interact.getMove = async (state) => {
     console.log(`The current state is ${render(state)}`);
+    console.log(`The current cat location is  ${state.catIndex}`);
     const index = await ask(`What is the index you want to move the cat?`, (x) => {
       const index = x;
-    if ( index < 0 || index > 120 ) {
-      throw Error(`Location must be between Row: 0-11 and Col: 0-11`);
+    
+    //2nd and 3rd of these checks are unessassary I think
+    if(((state.catIndex + 1) == index) || ((state.catIndex - 1) == index) || 
+    ((state.catIndex - 11) == index) || ((state.catIndex + 11) == index) || 
+    ((state.catIndex - 10) == index) || ((state.catIndex + 10) == index)){
+        throw Error(`Location must be one hex away from the current cat location`);
+      }
+    else if ( index < 0 || index > 120 ) {
+        throw Error(`Location must be between Row: 0-11 and Col: 0-11`);
     } else if (index == state.catIndex) {
-      throw Error(`The cat is already on that hex`);
+        throw Error(`The cat is already on that hex`);
     } else if (state.blockers[index]) {
-      throw Error(`A block already exists on that hex`);
-    } else {
-      return index;
+        throw Error(`A block already exists on that hex`);
+    }
+    else {
+        return index;
     }
   });
   console.log(`You played ${index}`);
   return index;
   };
-
-  /*
-console.log(`The current state is ${render(state)}`);
-    const index = Math.floor(Math.random() * 120);
-  console.log(`You played ${index}`);
-  return index;
-  */
   
   //printing the reusults of the game to the players
   //this code can be made prettier
