@@ -3,7 +3,7 @@ import * as backend from './build/index.main.mjs';
 import { ask, yesno, done } from '@reach-sh/stdlib/ask.mjs';
 
 function render(st){
- let visual = '\n\t';
+ let visual = '\n';
  let cnt = 0;
  for(let i = 0; i < 11; i++){
     if(i % 2 == 1){
@@ -122,24 +122,27 @@ function render(st){
         const index = x;
       if ( index < 0 || index > 120 ) {
         throw Error(`Location must be between Row: 0-11 and Col: 0-11`);
-      } else if (index = state.catIndex) {
+      } else if (index == state.catIndex) {
         throw Error(`The cat is on that hex`);
       } else if (state.blockers[index]) {
         throw Error(`A block already exists on that hex`);
       } else {
         return index;
       }
+      return index;
     });
+    console.log(`You played ${index}`);
+     return index;
   };
 
-  //getting the move of the cat, up, down, left, or right. todo
+  //getting the move for the cat. todo, make it only be able move one hex eacch
   interact.getMove = async (state) => {
     console.log(`The current state is ${render(state)}`);
     const index = await ask(`What is the index you want to move the cat?`, (x) => {
       const index = x;
     if ( index < 0 || index > 120 ) {
       throw Error(`Location must be between Row: 0-11 and Col: 0-11`);
-    } else if (index = state.catIndex) {
+    } else if (index == state.catIndex) {
       throw Error(`The cat is already on that hex`);
     } else if (state.blockers[index]) {
       throw Error(`A block already exists on that hex`);
@@ -147,7 +150,16 @@ function render(st){
       return index;
     }
   });
+  console.log(`You played ${index}`);
+  return index;
   };
+
+  /*
+console.log(`The current state is ${render(state)}`);
+    const index = Math.floor(Math.random() * 120);
+  console.log(`You played ${index}`);
+  return index;
+  */
   
   //printing the reusults of the game to the players
   //this code can be made prettier
