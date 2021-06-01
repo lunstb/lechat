@@ -2,6 +2,12 @@ import { loadStdlib } from '@reach-sh/stdlib';
 import * as backend from './build/index.main.mjs';
 import { ask, yesno, done } from '@reach-sh/stdlib/ask.mjs';
 
+
+//have a random array of numbers which are blockers
+//these also get rendered
+// perform a check in the get
+var randomArray = new Array(10);
+
 function render(st){
  let visual = '\n';
  let cnt = 0;
@@ -10,7 +16,7 @@ function render(st){
       visual += ' ';
     }
    for(let j = 0; j < 11; j++){
-    if(st.blockers[cnt]){
+    if(st.blockers[cnt] || randomArray.includes(cnt)){
       visual += 'b'
     }
     else if(cnt == st.catIndex){
@@ -94,6 +100,7 @@ function render(st){
     process.exit(1);
   };
 
+
   //geting the wagers / accepting the wagers
   if (isAlice) {
     const amt = await ask(
@@ -115,10 +122,25 @@ function render(st){
     };
   }
 
+  //temporary solution to the random blockers
+  var d = new Date();
+  var n = d.getTime();
+  n = Math.floor(n / 100000);
+
+var randomNum = n % 100;
+for(let i = 0; i < randomArray.length; i++){
+  if(randomNum == 60){
+    randomNum += 1
+  }
+  randomArray[i] =  randomNum;
+  randomNum = Math.floor(randomNum / 2) + 55;
+}
+console.log(randomArray);
+
+
    // getting the index of a unused hex
    interact.getHex = async (state) => {
     console.log(`The current state is ${render(state)}`);
-    console.log(`The current cat location is  ${state.catIndex}`);
     const index = await ask(`What is the index you want to put the hex?`, (x) => {
         const index = x;
       if ( index < 0 || index > 120 ) {
@@ -126,6 +148,8 @@ function render(st){
       } else if (index == state.catIndex) {
         throw Error(`The cat is on that hex`);
       } else if (state.blockers[index]) {
+        throw Error(`A block already exists on that hex`);
+      } else if (randomArray.includes(index)) {
         throw Error(`A block already exists on that hex`);
       } else {
         return index;
@@ -142,19 +166,28 @@ function render(st){
     console.log(`The current cat location is  ${state.catIndex}`);
     const index = await ask(`What is the index you want to move the cat?`, (x) => {
       const index = x;
-    
-    //2nd and 3rd of these checks are unessassary I think
-    if(((state.catIndex + 1) == index) || ((state.catIndex - 1) == index) || 
-    ((state.catIndex - 11) == index) || ((state.catIndex + 11) == index) || 
-    ((state.catIndex - 10) == index) || ((state.catIndex + 10) == index)){
-        throw Error(`Location must be one hex away from the current cat location`);
-      }
-    else if ( index < 0 || index > 120 ) {
+
+    //first checks if the index spot is one away from the current index spot
+    if(state.catIndex == index - 1 || state.catIndex - 1 == index ||
+      state.catIndex - 11 == index || state.catIndex - 10 == index ||
+      state.catIndex  == index - 11 || state.catIndex == index - 12){
+      console.log(`good location`);
+      console.log(`you played ${index} and the cat was on ${state.catIndex}`);
+    }
+    else{
+      console.log(`you played ${index} and the cat was on ${state.catIndex}`);
+      throw Error(`The new location is not close to original`);
+    }
+
+
+    if ( index < 0 || index > 120 ) {
         throw Error(`Location must be between Row: 0-11 and Col: 0-11`);
     } else if (index == state.catIndex) {
         throw Error(`The cat is already on that hex`);
     } else if (state.blockers[index]) {
         throw Error(`A block already exists on that hex`);
+    } else if (randomArray.includes(index)) {
+      throw Error(`A block already exists on that hex`);
     }
     else {
         return index;

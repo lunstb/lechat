@@ -7,7 +7,8 @@ const Board = Array(Bool, CELLS);
 
 //the state consists of the index of the cat, and the array of blockers
 const State = Object({catIndex: UInt, 
-                      blockers: Board });
+                      blockers: Board,
+                      ranBlocksInit: Bool });
 
 const boardEmpty = Array.replicate(CELLS, false);
 
@@ -15,8 +16,10 @@ const startCat = 60;
 
 //initializes the board
 const boardInit = () => ({
-                  catIndex: startCat,
-                  blockers: boardEmpty })
+  catIndex: startCat,
+  blockers: boardEmpty,
+  ranBlocksInit: false})
+
 
 // checks to see if the cat has escaped given its index
 const catEscaped = (st) => {
@@ -40,11 +43,10 @@ const catEscaped = (st) => {
 const catBlocked = (st) =>{
   require(!catEscaped(st));
   
-
-  //checks if there are blocks ro the right, left, below, and above
-  return st.blockers[st.catIndex - 1] && st.blockers[st.catIndex + 1] && 
+  //checks if there are blocks ro the right, left, below, and above. todo fix
+  return st.blockers[st.catIndex - 1] && st.blockers[st.catIndex + 1] &&
   st.blockers[st.catIndex - ROWS] && st.blockers[st.catIndex + ROWS] &&
-  st.blockers[st.catIndex - ROWS + 1] && st.blockers[st.catIndex + ROWS - 1]; 
+  st.blockers[st.catIndex - ROWS + 1] && st.blockers[st.catIndex + ROWS + 1];
 }
 
 //makes sure the cat move is valid
@@ -63,12 +65,20 @@ function getValidBlockMove(interact, st){
   //todo, make sure block move is within array, not on exisiting block or cat
   return declassify(_blockMove);
 }
+
+//gets the random block state
+function getRandomBlockState(interact,  st){
+  const _ranState = interact.randomBlockers(st);
+  return declassify(_ranState);
+}
+
 // applies the cat move to the board state
 function applyCatMove(st, i){
   require(!catBlocked(st));
   return {
     catIndex: i,
-    blockers: st.blockers
+    blockers: st.blockers,
+    ranBlocksInit: st.ranBlocksInit
   };
 }
 
@@ -80,7 +90,8 @@ function applyBlockerMove(st, m){
 
   return {
     catIndex: st.catIndex,
-    blockers: st.blockers.set(m, true)
+    blockers: st.blockers.set(m, true),
+    ranBlocksInit: st.ranBlocksInit
   };
 }
 
@@ -94,6 +105,7 @@ const Player =
       { ...hasRandom,
         seeOutcome: Fun([UInt], Null),
         informTimeout: Fun([], Null),
+        randomBlockers: Fun([State], State),
         doneState: Fun([State], Null) };
 
 //Alice the cat
@@ -114,7 +126,7 @@ export const main =
     {},
     [Participant('Alice', Alice), Participant('Bob', Bob)],
     (A, B) => {
-    
+      
       const informTimeout = () => {
         each([A, B], () => {
           interact.informTimeout(); }); };
@@ -126,17 +138,18 @@ export const main =
       commit();
 
       B.only(() => {
-        interact.acceptWager(wager); });
+        interact.acceptWager(wager);
+        });
       B.pay(wager)
         .timeout(DEADLINE, () => closeTo(A, informTimeout));
 
         var state = boardInit();
         invariant(balance() == 2 * wager);
-
+        
         //game plays when cat has not escaped and not been blocked
         while(!gameOver(state)){
           commit();
-
+      
          A.only(() => {
            const catMove = getValidCatMove(interact, state); });
          A.publish(catMove);
