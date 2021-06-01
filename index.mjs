@@ -3,10 +3,11 @@ import * as backend from './build/index.main.mjs';
 import { ask, yesno, done } from '@reach-sh/stdlib/ask.mjs';
 
 
-//have a random array of numbers which are blockers
-//these also get rendered
-// perform a check in the get
+//array to store the psuedo random numbers which determines where blockers go
 var randomArray = new Array(10);
+
+// variable which represents the transaction hosh
+var transactionHash = 0;
 
 function render(st){
  let visual = '\n';
@@ -77,12 +78,14 @@ function render(st){
   if (deployCtc) {
     ctc = acc.deploy(backend);
     const info = await ctc.getInfo();
+    transactionHash = JSON.stringify(info);
     console.log(`The contract is deployed as = ${JSON.stringify(info)}`);
   } else {
     const info = await ask(
       `Please paste the contract information:`,
       JSON.parse
     );
+    transactionHash = JSON.stringify(info);
     ctc = acc.attach(backend, info);
   }
 
@@ -122,6 +125,13 @@ function render(st){
     };
   }
 
+  console.log(`here is the transaction hash: ${transactionHash}`);
+  console.log(typeof transactionHash);
+  var indexTransHash = transactionHash.indexOf("}")
+  transactionHash = transactionHash.substring(indexTransHash - 20, indexTransHash -2);
+  var hashToNum = parseInt(transactionHash);
+
+  console.log(`hashtonum ${hashToNum}`);
   //temporary solution to the random blockers
   var d = new Date();
   var n = d.getTime();
