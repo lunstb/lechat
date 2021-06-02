@@ -3,8 +3,7 @@ import * as backend from './build/index.main.mjs';
 import { ask, yesno, done } from '@reach-sh/stdlib/ask.mjs';
 
 
-//array to store the psuedo random numbers which determines where blockers go
-var randomArray = new Array(10);
+
 
 // variable which represents the transaction hosh
 var transactionHash = 0;
@@ -129,23 +128,33 @@ function render(st){
   console.log(typeof transactionHash);
   var indexTransHash = transactionHash.indexOf("}")
   transactionHash = transactionHash.substring(indexTransHash - 20, indexTransHash -2);
-  var hashToNum = parseInt(transactionHash);
 
-  console.log(`hashtonum ${hashToNum}`);
-  //temporary solution to the random blockers
-  var d = new Date();
-  var n = d.getTime();
-  n = Math.floor(n / 100000);
+  // Idea is that we have two different thingies maximum randomness nice
 
-var randomNum = n % 100;
-for(let i = 0; i < randomArray.length; i++){
-  if(randomNum == 60){
-    randomNum += 1
-  }
-  randomArray[i] =  randomNum;
-  randomNum = Math.floor(randomNum / 2) + 55;
+let size = 11;
+let stepX = 683, stepY=503; // Sufficiently large prime number
+ 
+// Only grabbing 7 characters of hex b/c we want to avoid integer overflow
+let offsetX = parseInt(transactionHash.substr(2,7),16);
+let offsetY = parseInt(transactionHash.substring(9,7),16);
+
+//array to store the psuedo random numbers which determines where blockers go
+var randomArray = new Array(offsetX % 7 + 5);
+
+for(let numRandoms = (offsetX % 7 + 5); numRandoms > 0; --numRandoms){
+	let tmpX = (offsetX+numRandoms*stepX)%size;
+	let tmpY = (offsetY+numRandoms*stepY)%size;
+	//console.log(tmpX,tmpY); //delete later, here now for testing purposes
+	// If you want to convert it to a single number:
+	let num = tmpX*size+tmpY;
+  //console.log(num); //delete later, here now for testing purposes
+
+  randomArray[numRandoms] = num;
+
 }
-console.log(randomArray);
+
+
+  
 
 
    // getting the index of a unused hex
