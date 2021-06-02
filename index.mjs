@@ -98,8 +98,6 @@ var transactionHash = 0;
     };
   }
 
-  console.log(`here is the transaction hash: ${transactionHash}`);
-  console.log(typeof transactionHash);
   var indexTransHash = transactionHash.indexOf("}")
   transactionHash = transactionHash.substring(indexTransHash - 20, indexTransHash -2);
 
@@ -183,11 +181,8 @@ function render(st){
     if(state.catIndex == index - 1 || state.catIndex - 1 == index ||
       state.catIndex - 11 == index || state.catIndex - 10 == index ||
       state.catIndex  == index - 11 || state.catIndex == index - 12){
-      console.log(`good location`);
-      console.log(`you played ${index} and the cat was on ${state.catIndex}`);
     }
     else{
-      console.log(`you played ${index} and the cat was on ${state.catIndex}`);
       throw Error(`The new location is not close to original`);
     }
 
