@@ -2,35 +2,9 @@ import { loadStdlib } from '@reach-sh/stdlib';
 import * as backend from './build/index.main.mjs';
 import { ask, yesno, done } from '@reach-sh/stdlib/ask.mjs';
 
-
-
-
 // variable which represents the transaction hosh
 var transactionHash = 0;
 
-function render(st){
- let visual = '\n';
- let cnt = 0;
- for(let i = 0; i < 11; i++){
-    if(i % 2 == 1){
-      visual += ' ';
-    }
-   for(let j = 0; j < 11; j++){
-    if(st.blockers[cnt] || randomArray.includes(cnt)){
-      visual += 'b'
-    }
-    else if(cnt == st.catIndex){
-      visual += 'c'
-    }
-    else{
-      visual += 'o'
-    }
-    cnt++;
-   }
-   visual += '\n'
- }
- return visual;
-}
 
 (async () => {
   const stdlib = await loadStdlib();
@@ -150,12 +124,31 @@ for(let numRandoms = (offsetX % 7 + 5); numRandoms > 0; --numRandoms){
   //console.log(num); //delete later, here now for testing purposes
 
   randomArray[numRandoms] = num;
-
 }
 
-
-  
-
+function render(st){
+  let visual = '\n';
+  let cnt = 0;
+  for(let i = 0; i < 11; i++){
+     if(i % 2 == 1){
+       visual += ' ';
+     }
+    for(let j = 0; j < 11; j++){
+     if(st.blockers[cnt] || randomArray.includes(cnt)){
+       visual += 'b'
+     }
+     else if(cnt == st.catIndex){
+       visual += 'c'
+     }
+     else{
+       visual += 'o'
+     }
+     cnt++;
+    }
+    visual += '\n'
+  }
+  return visual;
+ }
 
    // getting the index of a unused hex
    interact.getHex = async (state) => {
