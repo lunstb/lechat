@@ -93,6 +93,10 @@ var transactionHash = 0;
       if (accepted) {
         return;
       } else {
+         //return coins to Alice, so no funds are left in the smart contract
+         console.log(`Bob declines the wager, returning funds to Alice`); //only shows up on Bob's console, may need fixing (todo)
+         console.log(`Alice will recieve funds at next timeout`);
+         await stdlib.wait(10);
         process.exit(0);
       }
     };
@@ -147,7 +151,6 @@ function render(st){
   }
   return visual;
  }
-
    // getting the index of a unused hex
    interact.getHex = async (state) => {
     console.log(`The current state is ${render(state)}`);
