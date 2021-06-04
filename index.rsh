@@ -103,10 +103,9 @@ function gameOver(st){
 //the player object
 const Player =
       { ...hasRandom,
-        seeOutcome: Fun([UInt], Null),
+        doneState: Fun([State], Null),
         informTimeout: Fun([], Null),
-        randomBlockers: Fun([State], State),
-        doneState: Fun([State], Null) };
+        };
 
 //Alice the cat
 const Alice =
