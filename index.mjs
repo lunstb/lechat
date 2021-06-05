@@ -83,7 +83,7 @@ var transactionHash = 0;
       `How much do you want to wager?`,
       stdlib.parseCurrency
     );
-    interact.wager = amt;
+    interact.setWager = amt;
   } else {
     interact.acceptWager = async (amt) => {
       const accepted = await ask(
@@ -173,7 +173,7 @@ function render(st){
      return index;
   };
 
-  //getting the move for the cat. todo, make it only be able move one hex eacch
+  //getting the move for the cat
   interact.getMove = async (state) => {
     console.log(`The current state is ${render(state)}`);
     console.log(`The current cat location is  ${state.catIndex}`);

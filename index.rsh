@@ -7,8 +7,7 @@ const Board = Array(Bool, CELLS);
 
 //the state consists of the index of the cat, and the array of blockers
 const State = Object({catIndex: UInt, 
-                      blockers: Board,
-                      ranBlocksInit: Bool });
+                      blockers: Board});
 
 const boardEmpty = Array.replicate(CELLS, false);
 
@@ -17,25 +16,16 @@ const startCat = 60;
 //initializes the board
 const boardInit = () => ({
   catIndex: startCat,
-  blockers: boardEmpty,
-  ranBlocksInit: false})
+  blockers: boardEmpty,})
 
 
 // checks to see if the cat has escaped given its index
 const catEscaped = (st) => {
   const i = st.catIndex;
   //checks to see if the cat is on top or bottom row
-  if(i < COLS || i >= ROWS * (COLS - 1)){
-    return true;
-  }
-  //checks to see if the cat is in left or right column
-  else if(i % COLS == 0 || i % COLS == COLS - 1){
-    return true;
-  }
-  // the cat has not escaped
-  else{
-    return false;
-  }
+   //checks to see if the cat is in left or right column
+  return (i < COLS || i >= ROWS * (COLS - 1)) || 
+  (i % COLS == 0 || i % COLS == COLS - 1);
 }
 
 //checks if the cat is blocked
@@ -78,7 +68,6 @@ function applyCatMove(st, i){
   return {
     catIndex: i,
     blockers: st.blockers,
-    ranBlocksInit: st.ranBlocksInit
   };
 }
 
@@ -91,7 +80,6 @@ function applyBlockerMove(st, m){
   return {
     catIndex: st.catIndex,
     blockers: st.blockers.set(m, true),
-    ranBlocksInit: st.ranBlocksInit
   };
 }
 
@@ -111,7 +99,7 @@ const Player =
 const Alice =
       { ...Player,
         getMove: Fun([State], UInt),
-        wager: UInt,};
+        setWager: UInt};
 
 //Bob the blocker
 const Bob =
@@ -131,7 +119,7 @@ export const main =
           interact.informTimeout(); }); };
 
       A.only(() => {
-        const wager = declassify(interact.wager); });
+        const wager = declassify(interact.setWager); });
       A.publish(wager)
         .pay(wager);
       commit();
