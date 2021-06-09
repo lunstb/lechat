@@ -43,9 +43,16 @@ class App extends React.Component {
 
 class Player extends React.Component {
     random() { return reach.hasRandom.random(); }
-   
-    doneState(state) { this.setState({view: 'Done', outcome: state}); }
+    // async getHand() { // Fun([], UInt)
+    //   const hand = await new Promise(resolveHandP => {
+    //     this.setState({view: 'GetHand', playable: true, resolveHandP});
+    //   });
+    //   this.setState({view: 'WaitingForResults', hand});
+    //   return handToInt[hand];
+    // }
+    doneState(boardArray) { this.setState({view: 'Done', outcome: boardArray}); }
     informTimeout() { this.setState({view: 'Timeout'}); }
+    //playHand(hand) { this.state.resolveHandP(hand); }
   }
 
   class Deployer extends Player {
@@ -57,27 +64,20 @@ class Player extends React.Component {
     async deploy() {
       const ctc = this.props.acc.deploy(backend);
       this.setState({view: 'Deploying', ctc});
-      
       this.setWager = reach.parseCurrency(this.state.wager); // UInt
       backend.Alice(ctc, this);
-
-      const ctcInfoStr = JSON.stringify(await ctc.getInfo());
-
-      //this is where we need to get the random blockers array
+      const ctcInfoStr = JSON.stringify(await ctc.getInfo(), null, 2);
       this.setState({view: 'WaitingForAttacher', ctcInfoStr});
     }
-
-    //getting the move of the cat
-    async getMove(state){ //Fun([State], UInt)
+    //gets the move of the cat
+    async getMove(boardArray){
       const move = await new Promise(resolveMove => {
-        this.setState({view:'GetMove', curState: state, playable: true, resolveMove});
+        this.setState({view: 'GetMove', playable: true, boardArray, resolveMove});
       });
       this.setState({view: 'WaitingForResults', move});
       return move;
     }
-    //defines what happens when the user clicks
-    playMove(move){this.state.resolveMove(move)};
-
+    playMove(move) {this.state.resolveMove(move)};
     render() { return renderView(this, DeployerViews); }
   }
   
@@ -87,7 +87,6 @@ class Player extends React.Component {
       super(props);
       this.state = {view: 'Attach'};
     }
-    //this is where we need to get the random blockers array
     attach(ctcInfoStr) {
       const ctc = this.props.acc.attach(backend, JSON.parse(ctcInfoStr));
       this.setState({view: 'Attaching'});
@@ -104,18 +103,20 @@ class Player extends React.Component {
       this.setState({view: 'WaitingForTurn'});
     }
 
-    //getting the move of the cat
-    async getHex(state){ //Fun([State], UInt)
+    //gets the hex of the blocker
+    async getHex(boardArray){
       const hex = await new Promise(resolveHex => {
-        this.setState({view:'GetMove', curState: state, playable: true, resolveHex});
+        this.setState({view: 'GetHex', playable: true, boardArray, resolveHex});
       });
       this.setState({view: 'WaitingForResults', hex});
       return hex;
     }
-    //defines what happens when the user clicks
-    playHex(hex){this.state.resolveHex(hex)};
+    playHex(hex) {this.state.resolveHex(hex)};
+
 
     render() { return renderView(this, AttacherViews); }
   }
 
   renderDOM(<App />);
+  
+  

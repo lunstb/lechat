@@ -2,40 +2,27 @@ import React from 'react';
 
 const exports = {};
 
-function renderState(st){
-  let visual = '\n';
-  let cnt = 0;
-  for(let i = 0; i < 11; i++){
-     if(i % 2 === 1){
-       visual += ' ';
-     }
-    for(let j = 0; j < 11; j++){
+// Player views must be extended.
+// It does not have its own Wrapper view.
 
-      //st.blockers[cnt] || randomArray.includes(cnt)
-     if(st.blockers[cnt]){
-       visual += 'b'
-     }
-     else if(cnt === st.catIndex){
-       visual += 'c'
-     }
-     else{
-       visual += 'o'
-     }
-     cnt++;
-    }
-    visual += '\n'
+exports.WaitingForResults = class extends React.Component {
+  render() {
+    return (
+      <div>
+        Waiting for results...
+      </div>
+    );
   }
-  return visual;
- }
+}
 
-//displays the final outcome of the game. TODO - needs to say who won and who lost
+// This displays the outcome of the game. TODO fix this
 exports.Done = class extends React.Component {
   render() {
     const {outcome} = this.props;
     return (
       <div>
-        Thank you for playing. The outcome of this game was:
-        <br />{renderState(outcome) || 'Unknown'}
+        Thank you for playing. The final board of the game was
+        <br />{outcome.blockers}
       </div>
     );
   }
