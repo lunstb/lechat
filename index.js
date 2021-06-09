@@ -57,9 +57,12 @@ class Player extends React.Component {
     async deploy() {
       const ctc = this.props.acc.deploy(backend);
       this.setState({view: 'Deploying', ctc});
-      this.wager = reach.parseCurrency(this.state.wager); // UInt
+      
+      this.setWager = reach.parseCurrency(this.state.wager); // UInt
       backend.Alice(ctc, this);
-      const ctcInfoStr = JSON.stringify(await ctc.getInfo(), null, 2);
+
+      const ctcInfoStr = JSON.stringify(await ctc.getInfo());
+
       //this is where we need to get the random blockers array
       this.setState({view: 'WaitingForAttacher', ctcInfoStr});
     }
@@ -116,5 +119,3 @@ class Player extends React.Component {
   }
 
   renderDOM(<App />);
-  
-  
