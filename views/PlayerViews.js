@@ -1,4 +1,6 @@
 import React from 'react';
+import catOrangeJustice from '../images/catOrangeJustice.gif'
+import rockDance from '../images/rockDance.gif'
 
 const exports = {};
 
@@ -20,7 +22,7 @@ exports.WaitingForResults = class extends React.Component {
 exports.Done = class extends React.Component {
   render() {
     const {catEscaped, winAmt} = this.props;
-    const images = ["https://i1.wp.com/www.jeffreythompson.org/blog/wp-content/uploads/2010/07/EB28.gif?ssl=1", "https://media.giphy.com/media/1zRf1FsIIvtFO0PS7U/giphy.gif"];
+    const images = [rockDance, catOrangeJustice];
     const boolToOutcome = ['Bob the blocker ', 'Alice the cat '];
     return (
       <div>

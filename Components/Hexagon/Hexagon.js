@@ -27,17 +27,23 @@ class Hexagon extends Component {
     }
 
     let canClick = true;
-
-    if(this.props.cat || this.props.rock)
+    let reason = "";
+    if(this.props.cat || this.props.rock){
       canClick = false;
+      reason = "something else is already there."
+    }
+      
 
     let catIndex = this.props.catX + this.props.catY*11;
     let blockIndex = this.props.x + this.props.y*11;
+    let offset = this.props.y % 2;
+    let otherOffset = (offset + 1)%2;
     if(this.props.isCat){
       if(!(catIndex === blockIndex - 1 || catIndex - 1 === blockIndex ||
-        catIndex - 11 === blockIndex || catIndex - 10 === blockIndex ||
-        catIndex  === blockIndex - 11 || catIndex === blockIndex - 12)){
+        catIndex - 11 - offset=== blockIndex || catIndex - 10 - offset === blockIndex ||
+        catIndex  === blockIndex - 10 - otherOffset|| catIndex === blockIndex - 11 - otherOffset)){
         canClick = false;
+        reason = "it is not an adjacent cat tile"
       }
     }
 
@@ -51,8 +57,9 @@ class Hexagon extends Component {
 
 
     return (
-      <div key={`hexagon${this.props.top}${this.props.left}`} style={hexagonPosition} onClick={canClick?() => this.props.callback(this.props.self,this.props.x+this.props.y*11):()=>alert("You can't move there")}>
+      <div key={`hexagon${this.props.top}${this.props.left}`} style={hexagonPosition} onClick={canClick?() => this.props.callback(this.props.self,this.props.x+this.props.y*11):()=>alert(`You can't move there because ${reason}`)}>
           {children}
+          <p>{this.props.x+this.props.y*11} : {catIndex} : {blockIndex}</p>
       </div>
     );
   }
