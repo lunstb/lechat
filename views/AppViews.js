@@ -28,7 +28,18 @@ exports.ConnectAccount = class extends React.Component {
 }
 
 exports.FundAccount = class extends React.Component {
+
+  state = {
+    text: "Fund Account"
+  }
+  
+  changeText = (text, amt) => {
+  
+    this.setState({ text }); 
+  } 
+
   render() {
+    const { text } = this.state;
     const {bal, standardUnit, defaultFundAmt, parent} = this.props;
     const amt = (this.state || {}).amt || defaultFundAmt;
     return (
@@ -46,12 +57,16 @@ exports.FundAccount = class extends React.Component {
           placeholder={defaultFundAmt}
           onChange={(e) => this.setState({amt: e.currentTarget.value})}
         />
-        <button onClick={() => parent.fundAccount(amt)}>Fund Account</button>
+        <button onClick={() =>  { 
+          this.changeText("Sending...", amt);
+          parent.fundAccount(amt);
+          }}> {text} </button>
         <button onClick={() => parent.skipFundAccount()}>Skip</button>
       </div>
     );
   }
 }
+
 
 exports.DeployerOrAttacher = class extends React.Component {
   render() {
