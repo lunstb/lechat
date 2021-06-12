@@ -1,5 +1,8 @@
 import React, { Component } from 'react';
 import './Hexagon.css';
+import hexagonImg from '../../images/hexagon.png'
+import rockImg from '../../images/rock_1.png'
+import catImg from '../../images/cat.gif'
 
 class Hexagon extends Component {
   // constructor(props) {
@@ -10,9 +13,9 @@ class Hexagon extends Component {
   render() {
     let children = [];
 
-    const cat = <img className="hexagon-cat" src="https://i.giphy.com/media/piXMiISN73f0wfbRqr/source.gif" alt="cat" width="65" height="65"/>
-    const rock = <img className="hexagon-rock" src="http://assets.stickpng.com/images/580b585b2edbce24c47b26f6.png" alt="rock_1" width="80" height="60"/>
-    const tile = <img src="https://i.dlpng.com/static/png/5507096-hexagon-png-transparent-hexagonpng-images-dlpngcom-hexagon-transparent-background-400_461_preview.png" alt="tile" width="60" height="60"/>
+    const cat = <img className="hexagon-cat" src={catImg} alt="cat" width="65" height="65"/>
+    const rock = <img className="hexagon-rock" src={rockImg} alt="rock_1" width="55" height="45"/>
+    const tile = <img src={hexagonImg} alt="tile" width="60" height="60"/>
 
     // Position Hexagon
     const hexagonPosition = {

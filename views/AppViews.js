@@ -94,5 +94,9 @@ exports.DeployerOrAttacher = class extends React.Component {
   }
 }
 
+<<<<<<< HEAD
 
 export default exports;
+=======
+export default exports;
+>>>>>>> 21322b62554750eff5de4da1ade17454f0e733d5
