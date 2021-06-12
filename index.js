@@ -9,7 +9,7 @@ import * as reach from '@reach-sh/stdlib/ALGO'
 
 const {standardUnit} = reach;
 const defaults = {defaultFundAmt: '10', defaultWager: '3', standardUnit};
-const boolToOutcome = ['Bob the blocker ', 'Alice the cat '];
+
 //winner amount, set to 2*wager when deployer sets wager and attacher accepts wager
 var winAmt = -1;
 
@@ -46,7 +46,7 @@ class App extends React.Component {
 
 class Player extends React.Component {
     random() { return reach.hasRandom.random(); }
-   outcome(catEscaped) { this.setState({view: 'Done', outcome: boolToOutcome[+catEscaped], winAmt}); }
+   outcome(catEscaped) { this.setState({view: 'Done', catEscaped, winAmt}); }
     informTimeout() { this.setState({view: 'Timeout'}); }
   }
 
