@@ -15,14 +15,14 @@ exports.WaitingForResults = class extends React.Component {
   }
 }
 
-// This displays the outcome of the game. TODO fix this
+// This displays the outcome of the game.
 exports.Done = class extends React.Component {
   render() {
-    const {outcome} = this.props;
+    const {outcome, winAmt} = this.props;
     return (
       <div>
-        Thank you for playing. The final board of the game was
-        <br />{outcome.blockers}
+        Thank you for playing. {outcome} won {winAmt} algos
+        <br />
       </div>
     );
   }

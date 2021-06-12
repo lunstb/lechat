@@ -9,6 +9,9 @@ import * as reach from '@reach-sh/stdlib/ALGO'
 
 const {standardUnit} = reach;
 const defaults = {defaultFundAmt: '10', defaultWager: '3', standardUnit};
+const boolToOutcome = ['Bob the blocker ', 'Alice the cat '];
+//winner amount, set to 2*wager when deployer sets wager and attacher accepts wager
+var winAmt = -1;
 
 class App extends React.Component {
     constructor(props){
@@ -43,16 +46,8 @@ class App extends React.Component {
 
 class Player extends React.Component {
     random() { return reach.hasRandom.random(); }
-    // async getHand() { // Fun([], UInt)
-    //   const hand = await new Promise(resolveHandP => {
-    //     this.setState({view: 'GetHand', playable: true, resolveHandP});
-    //   });
-    //   this.setState({view: 'WaitingForResults', hand});
-    //   return handToInt[hand];
-    // }
-    doneState(boardArray) { this.setState({view: 'Done', outcome: boardArray.blockers}); }
+   outcome(catEscaped) { this.setState({view: 'Done', outcome: boolToOutcome[+catEscaped], winAmt}); }
     informTimeout() { this.setState({view: 'Timeout'}); }
-    //playHand(hand) { this.state.resolveHandP(hand); }
   }
 
   class Deployer extends Player {
@@ -62,7 +57,9 @@ class Player extends React.Component {
 
       this.playMove = this.playMove.bind(this);
     }
-    setWager(wager) { this.setState({view: 'Deploy', wager}); }
+    setWager(wager) { 
+      winAmt = 2 * wager;
+      this.setState({view: 'Deploy', wager}); }
     async deploy() {
       const ctc = this.props.acc.deploy(backend);
       this.setState({view: 'Deploying', ctc});
@@ -100,6 +97,7 @@ class Player extends React.Component {
     }
     async acceptWager(wagerAtomic) { // Fun([UInt], Null)
       const wager = reach.formatCurrency(wagerAtomic, 4);
+      winAmt = 2 * wager;
       return await new Promise(resolveAcceptedP => {
         this.setState({view: 'AcceptTerms', wager, resolveAcceptedP});
       });
