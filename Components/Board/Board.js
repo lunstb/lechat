@@ -16,8 +16,8 @@ class Board extends Component {
         let tmp = <Hexagon 
           cat={(this.props.catX===j)&&(this.props.catY===i)} 
           rock={(this.props.rocks[i*11+j])}
-          top={OFFSET_Y+45*(i)} 
-          left={OFFSET_X+59*(j+i%2/2)}
+          top={OFFSET_Y+43*(i)} 
+          left={OFFSET_X+58*(j+i%2/2)}
           callback={this.props.callback}
           self = {this.props.self}
           isCat = {this.props.isCat}

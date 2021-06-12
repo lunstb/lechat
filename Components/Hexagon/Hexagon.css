@@ -13,7 +13,7 @@
 
 .hexagon-rock {
   position: absolute;
-  left: 10px;
-  top: 0px;
+  left: 22px;
+  top: 6px;
   z-index:1;
 }
