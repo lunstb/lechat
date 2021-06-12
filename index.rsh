@@ -36,7 +36,7 @@ const catBlocked = (st) =>{
   //checks if there are blocks ro the right, left, below, and above. todo fix
   return st.blockers[st.catIndex - 1] && st.blockers[st.catIndex + 1] &&
   st.blockers[st.catIndex - ROWS] && st.blockers[st.catIndex + ROWS] &&
-  st.blockers[st.catIndex - ROWS + 1] && st.blockers[st.catIndex + ROWS + 1];
+  st.blockers[st.catIndex - ROWS + 1] && st.blockers[st.catIndex + ROWS - 1];
 }
 
 //makes sure the cat move is valid

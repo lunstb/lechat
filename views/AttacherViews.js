@@ -86,7 +86,7 @@ exports.WaitingForTurn = class extends React.Component {
 exports.GetHex = class extends React.Component {
   render() {
     const {parent, playable, boardArray, hex} = this.props;
-    console.log(`Board Array: ${boardArray}`);
+    console.log(`Board Array: ${boardArray.blockers} ${boardArray.catIndex}`);
     console.log(`Hex: ${hex}`);
     return (
       <div>
@@ -96,8 +96,9 @@ exports.GetHex = class extends React.Component {
           rocks = {boardArray.blockers}
           callback = {parent.playHex}
           self = {parent}
-          catX = {boardArray.catIndex/11}
-          catY = {boardArray.catIndex%11}
+          isCat = {false}
+          catX = {boardArray.catIndex%11}
+          catY = {Math.floor(boardArray.catIndex/11)}
         />
       </div>
     );

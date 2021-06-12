@@ -50,7 +50,7 @@ class Player extends React.Component {
     //   this.setState({view: 'WaitingForResults', hand});
     //   return handToInt[hand];
     // }
-    doneState(boardArray) { this.setState({view: 'Done', outcome: boardArray}); }
+    doneState(boardArray) { this.setState({view: 'Done', outcome: boardArray.blockers}); }
     informTimeout() { this.setState({view: 'Timeout'}); }
     //playHand(hand) { this.state.resolveHandP(hand); }
   }
@@ -81,8 +81,8 @@ class Player extends React.Component {
     }
 
     playMove(self,move) {
-      console.log(self)
-      this.state.resolveMove(move)
+      console.log(move)
+      self.state.resolveMove(move)
     };
     render() { return renderView(this, DeployerViews); }
   }
@@ -117,7 +117,10 @@ class Player extends React.Component {
       this.setState({view: 'WaitingForResults', hex});
       return hex;
     }
-    playHex(hex) {this.state.resolveHex(hex)};
+    playHex(self,hex) {
+      console.log(hex)
+      self.state.resolveHex(hex)
+    };
 
 
     render() { return renderView(this, AttacherViews); }

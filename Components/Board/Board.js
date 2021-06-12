@@ -14,14 +14,17 @@ class Board extends Component {
     for(let i = 0; i<11; ++i){
       for(let j = 0; j<11; ++j){
         let tmp = <Hexagon 
-          cat={(this.props.catX===i)&&(this.props.catY===j)} 
+          cat={(this.props.catX===j)&&(this.props.catY===i)} 
           rock={(this.props.rocks[i*11+j])}
           top={OFFSET_Y+45*(i)} 
           left={OFFSET_X+59*(j+i%2/2)}
           callback={this.props.callback}
           self = {this.props.self}
-          x={i}
-          y={j}
+          isCat = {this.props.isCat}
+          x={j}
+          y={i}
+          catX={this.props.catX}
+          catY={this.props.catY}
         />
         board.push(tmp);
       }

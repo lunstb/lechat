@@ -100,13 +100,13 @@ exports.GetMove = class extends React.Component {
       <div>
         {!playable ? 'Please wait...' : ''}
         <br />
-        <button onClick={() => {parent.playMove(parent,10)}}>Hello</button>
         <Board
           rocks = {boardArray.blockers}
           callback = {parent.playMove}
-          self = {this}
-          catX = {boardArray.catIndex/11}
-          catY = {boardArray.catIndex%11}
+          self = {parent}
+          isCat = {true}
+          catX = {boardArray.catIndex%11}
+          catY = {Math.floor(boardArray.catIndex/11)}
         />
       </div>
     );
