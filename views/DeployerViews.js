@@ -1,4 +1,5 @@
 import React from 'react';
+import Board from '../Components/Board/Board';
 import PlayerViews from './PlayerViews';
 
 const exports = {...PlayerViews};
@@ -93,89 +94,20 @@ exports.WaitingForAttacher = class extends React.Component {
 exports.GetMove = class extends React.Component {
   render() {
     const {parent, playable, boardArray, move} = this.props;
-    console.log(`Board Array: ${boardArray.blockers}`);
+    console.log(`Board Array: ${boardArray.blockers} ${boardArray.catIndex}`);
     console.log(`Move: ${move}`);
     return (
       <div>
         {!playable ? 'Please wait...' : ''}
         <br />
-        <button
-          disabled={!playable}
-          onClick={() => parent.playMove(1)}
-        >1</button>
-        <button
-          disabled={!playable}
-          onClick={() => parent.playMove(2)}
-        >2</button>
-        <button
-          disabled={!playable}
-          onClick={() => parent.playMove(3)}
-        >3</button>
-        <button
-          disabled={!playable}
-          onClick={() => parent.playMove(4)}
-        >4</button>
-        <button
-          disabled={!playable}
-          onClick={() => parent.playMove(5)}
-        >5</button>
-        <button
-          disabled={!playable}
-          onClick={() => parent.playMove(6)}
-        >6</button>
-        <button
-          disabled={!playable}
-          onClick={() => parent.playMove(7)}
-        >7</button>
-        <button
-          disabled={!playable}
-          onClick={() => parent.playMove(8)}
-        >8</button>
-        <button
-          disabled={!playable}
-          onClick={() => parent.playMove(9)}
-        >9</button>
-        <button
-          disabled={!playable}
-          onClick={() => parent.playMove(10)}
-        >10</button>
-        <br />
-        <button
-          disabled={!playable}
-          onClick={() => parent.playMove(20)}
-        >20</button>
-        <button
-          disabled={!playable}
-          onClick={() => parent.playMove(30)}
-        >30</button>
-        <button
-          disabled={!playable}
-          onClick={() => parent.playMove(40)}
-        >40</button>
-        <button
-          disabled={!playable}
-          onClick={() => parent.playMove(50)}
-        >50</button>
-        <button
-          disabled={!playable}
-          onClick={() => parent.playMove(60)}
-        >60</button>
-        <button
-          disabled={!playable}
-          onClick={() => parent.playMove(70)}
-        >70</button>
-        <button
-          disabled={!playable}
-          onClick={() => parent.playMove(80)}
-        >80</button>
-        <button
-          disabled={!playable}
-          onClick={() => parent.playMove(90)}
-        >90</button>
-        <button
-          disabled={!playable}
-          onClick={() => parent.playMove(100)}
-        >100</button>
+        <button onClick={() => {parent.playMove(parent,10)}}>Hello</button>
+        <Board
+          rocks = {boardArray.blockers}
+          callback = {parent.playMove}
+          self = {this}
+          catX = {boardArray.catIndex/11}
+          catY = {boardArray.catIndex%11}
+        />
       </div>
     );
   }

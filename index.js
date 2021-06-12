@@ -59,6 +59,8 @@ class Player extends React.Component {
     constructor(props) {
       super(props);
       this.state = {view: 'SetWager'};
+
+      this.playMove = this.playMove.bind(this);
     }
     setWager(wager) { this.setState({view: 'Deploy', wager}); }
     async deploy() {
@@ -77,7 +79,11 @@ class Player extends React.Component {
       this.setState({view: 'WaitingForResults', move});
       return move;
     }
-    playMove(move) {this.state.resolveMove(move)};
+
+    playMove(self,move) {
+      console.log(self)
+      this.state.resolveMove(move)
+    };
     render() { return renderView(this, DeployerViews); }
   }
   

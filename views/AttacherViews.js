@@ -1,4 +1,5 @@
 import React from 'react';
+import Board from '../Components/Board/Board';
 import PlayerViews from './PlayerViews';
 
 const exports = {...PlayerViews};
@@ -91,83 +92,13 @@ exports.GetHex = class extends React.Component {
       <div>
         {!playable ? 'Please wait...' : ''}
         <br />
-        <button
-          disabled={!playable}
-          onClick={() => parent.playHex(1)}
-        >1</button>
-        <button
-          disabled={!playable}
-          onClick={() => parent.playHex(2)}
-        >2</button>
-        <button
-          disabled={!playable}
-          onClick={() => parent.playHex(3)}
-        >3</button>
-        <button
-          disabled={!playable}
-          onClick={() => parent.playHex(4)}
-        >4</button>
-        <button
-          disabled={!playable}
-          onClick={() => parent.playHex(5)}
-        >5</button>
-        <button
-          disabled={!playable}
-          onClick={() => parent.playHex(6)}
-        >6</button>
-        <button
-          disabled={!playable}
-          onClick={() => parent.playHex(7)}
-        >7</button>
-        <button
-          disabled={!playable}
-          onClick={() => parent.playHex(8)}
-        >8</button>
-        <button
-          disabled={!playable}
-          onClick={() => parent.playHex(9)}
-        >9</button>
-        <button
-          disabled={!playable}
-          onClick={() => parent.playHex(10)}
-        >10</button>
-        <br />
-        <button
-          disabled={!playable}
-          onClick={() => parent.playHex(20)}
-        >20</button>
-        <button
-          disabled={!playable}
-          onClick={() => parent.playHex(30)}
-        >30</button>
-        <button
-          disabled={!playable}
-          onClick={() => parent.playHex(40)}
-        >40</button>
-        <button
-          disabled={!playable}
-          onClick={() => parent.playHex(50)}
-        >50</button>
-        <button
-          disabled={!playable}
-          onClick={() => parent.playHex(60)}
-        >60</button>
-        <button
-          disabled={!playable}
-          onClick={() => parent.playHex(70)}
-        >70</button>
-        <button
-          disabled={!playable}
-          onClick={() => parent.playHex(80)}
-        >80</button>
-        <button
-          disabled={!playable}
-          onClick={() => parent.playHex(90)}
-        >90</button>
-        <button
-          disabled={!playable}
-          onClick={() => parent.playHex(100)}
-        >100</button>
+        <Board
+          rocks = {boardArray.blockers}
+          callback = {parent.playHex}
+          self = {parent}
+          catX = {boardArray.catIndex/11}
+          catY = {boardArray.catIndex%11}
+        />
       </div>
     );
   }
