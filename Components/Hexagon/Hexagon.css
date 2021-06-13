@@ -1,0 +1,19 @@
+.hexagon {
+  position: absolute;
+  width: 100px;
+  height: 80px;
+}
+
+.hexagon-cat {
+  position: absolute;
+  left: 5px;
+  top: -12px;
+  z-index: 2;
+}
+
+.hexagon-rock {
+  position: absolute;
+  left: 22px;
+  top: 6px;
+  z-index:1;
+}
