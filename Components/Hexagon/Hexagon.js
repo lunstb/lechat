@@ -59,7 +59,6 @@ class Hexagon extends Component {
     return (
       <div key={`hexagon${this.props.top}${this.props.left}`} style={hexagonPosition} onClick={canClick?() => this.props.callback(this.props.self,this.props.x+this.props.y*11):()=>alert(`You can't move there because ${reason}`)}>
           {children}
-          <p>{this.props.x+this.props.y*11} : {catIndex} : {blockIndex}</p>
       </div>
     );
   }

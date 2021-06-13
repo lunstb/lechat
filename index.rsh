@@ -8,8 +8,23 @@ const Board = Array(Bool, CELLS);
 //the state consists of the index of the cat, and the array of blockers
 const State = Object({catIndex: UInt, 
                       blockers: Board});
+        
+const bfa = [true, false];
 
-const boardEmpty = Array.replicate(CELLS, false);
+
+const boardEmpty = array(Bool, [false,false,true,false,false,false,false,false,true,false,false,
+  false,false,false,false,false,false,false,false,false,false,true,
+  false,false,true,false,false,false,false,false,false,false,false,
+  false,false,false,false,false,false,false,false,false,false,false,
+  false,false,false,false,false,false,false,false,false,false,false,
+  false,true,false,false,false,false,false,false,true,false,false,
+  false,false,false,false,false,false,false,false,false,false,false,
+  false,false,false,true,false,false,false,false,false,false,false,
+  false,false,false,false,false,false,false,false,false,false,false,
+  false,false,false,false,false,false,true,false,false,false,false,
+  true,false,false,false,false,false,false,false,false,false,false]);
+
+//const boardEmpty = Array.replicate(CELLS, false);
 
 const startCat = 60;
 
@@ -32,11 +47,11 @@ const catEscaped = (st) => {
 // Precondtion: cat must not be on the edge (escaped already)
 const catBlocked = (st) =>{
   require(!catEscaped(st));
-  
+
   //checks if there are blocks ro the right, left, below, and above. todo fix
   return st.blockers[st.catIndex - 1] && st.blockers[st.catIndex + 1] &&
   st.blockers[st.catIndex - ROWS] && st.blockers[st.catIndex + ROWS] &&
-  st.blockers[st.catIndex - ROWS + 1] && st.blockers[st.catIndex + ROWS + 1];
+  st.blockers[st.catIndex - ROWS + 1] && st.blockers[st.catIndex + ROWS + 1 ];
 }
 
 //makes sure the cat move is valid
@@ -130,13 +145,13 @@ export const main =
       B.pay(wager)
         .timeout(DEADLINE, () => closeTo(A, informTimeout));
 
+
         var state = boardInit();
         invariant(balance() == 2 * wager);
         
         //game plays when cat has not escaped and not been blocked
         while(!gameOver(state)){
           commit();
-      
          A.only(() => {
            const catMove = getValidCatMove(interact, state); });
          A.publish(catMove);
