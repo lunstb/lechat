@@ -1,15 +1,18 @@
 import React from 'react';
+import CatImage from '../Components/CatImage/CatImage';
 
 const exports = {};
 
 exports.Wrapper = class extends React.Component {
   render() {
     const {content} = this.props;
+    console.log(content.props.view)
     return (
       <div className="App">
         <header className="App-header" id="root">
           <h1>Le Chat Noir</h1>
           {content}
+          {content.props.view !== "Wrapper" ? <CatImage/>:<div></div>}
         </header>
       </div>
     );
