@@ -54,7 +54,7 @@ class Player extends React.Component {
       for(let i = 0; i<121; ++i){
         board.push(false);
       }
-      const numBlockers = Math.floor(Math.random()*6)+5;
+      const numBlockers = Math.floor(Math.random()*5)+6;
       let numPlaced = 0;
       while(numPlaced < numBlockers){
         const numRandom = Math.floor(Math.random()*121);

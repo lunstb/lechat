@@ -30,11 +30,15 @@ const catEscaped = (st) => {
 // Precondtion: cat must not be on the edge (escaped already)
 const catBlocked = (st) =>{
   require(!catEscaped(st));
+  //the offsets which factor in which row 
+  const row = (st.catIndex - (st.catIndex % 11)) / 11;
+  const offsetA = row % 2;
+  const offsetB = (offsetA + 1) % 2;
 
   //checks if there are blocks ro the right, left, below, and above. todo fix
   return st.blockers[st.catIndex - 1] && st.blockers[st.catIndex + 1] &&
-  st.blockers[st.catIndex - ROWS] && st.blockers[st.catIndex + ROWS] &&
-  st.blockers[st.catIndex - ROWS + 1] && st.blockers[st.catIndex + ROWS + 1 ];
+  st.blockers[st.catIndex - ROWS - offsetB] && st.blockers[st.catIndex + 10 + offsetA] &&
+  st.blockers[st.catIndex - 10 - offsetB] && st.blockers[st.catIndex + ROWS + offsetA ];
 }
 
 //makes sure the cat move is valid
