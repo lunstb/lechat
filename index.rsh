@@ -8,30 +8,13 @@ const Board = Array(Bool, CELLS);
 //the state consists of the index of the cat, and the array of blockers
 const State = Object({catIndex: UInt, 
                       blockers: Board});
-        
-const bfa = [true, false];
-
-
-const boardEmpty = array(Bool, [false,false,true,false,false,false,false,false,true,false,false,
-  false,false,false,false,false,false,false,false,false,false,true,
-  false,false,true,false,false,false,false,false,false,false,false,
-  false,false,false,false,false,false,false,false,false,false,false,
-  false,false,false,false,false,false,false,false,false,false,false,
-  false,true,false,false,false,false,false,false,true,false,false,
-  false,false,false,false,false,false,false,false,false,false,false,
-  false,false,false,true,false,false,false,false,false,false,false,
-  false,false,false,false,false,false,false,false,false,false,false,
-  false,false,false,false,false,false,true,false,false,false,false,
-  true,false,false,false,false,false,false,false,false,false,false]);
-
-//const boardEmpty = Array.replicate(CELLS, false);
 
 const startCat = 60;
 
 //initializes the board
-const boardInit = () => ({
+const boardInit = (boardState) => ({
   catIndex: startCat,
-  blockers: boardEmpty,})
+  blockers: boardState,})
 
 
 // checks to see if the cat has escaped given its index
@@ -108,6 +91,7 @@ const Player =
       { ...hasRandom,
         outcome: Fun([Bool], Null),
         informTimeout: Fun([], Null),
+        initRandomBoard: Fun([], Board)
         };
 
 //Alice the cat
@@ -134,9 +118,14 @@ export const main =
           interact.informTimeout(); }); };
 
       A.only(() => {
-        const wager = declassify(interact.setWager); });
+        const wager = declassify(interact.setWager);
+        const boardState = declassify(interact.initRandomBoard());
+       });
       A.publish(wager)
         .pay(wager);
+      commit();
+
+      A.publish(boardState);
       commit();
 
       B.only(() => {
@@ -146,7 +135,7 @@ export const main =
         .timeout(DEADLINE, () => closeTo(A, informTimeout));
 
 
-        var state = boardInit();
+        var state = boardInit(boardState);
         invariant(balance() == 2 * wager);
         
         //game plays when cat has not escaped and not been blocked

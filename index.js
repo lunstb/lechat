@@ -48,6 +48,25 @@ class Player extends React.Component {
     random() { return reach.hasRandom.random(); }
    outcome(catEscaped) { this.setState({view: 'Done', catEscaped, winAmt}); }
     informTimeout() { this.setState({view: 'Timeout'}); }
+
+    async initRandomBoard() {
+      var board = []
+      for(let i = 0; i<121; ++i){
+        board.push(false);
+      }
+      const numBlockers = Math.floor(Math.random()*6)+5;
+      let numPlaced = 0;
+      while(numPlaced < numBlockers){
+        const numRandom = Math.floor(Math.random()*121);
+        if(!board[numRandom] && numRandom !== 60){
+          board[numRandom] = true;
+          numPlaced++;
+        }
+      }
+     
+
+      return board;
+    }
   }
 
   class Deployer extends Player {
