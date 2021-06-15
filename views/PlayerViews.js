@@ -23,7 +23,7 @@ exports.Done = class extends React.Component {
   render() {
     const {catEscaped, winAmt} = this.props;
     const images = [rockDance, catOrangeJustice];
-    const boolToOutcome = ['Bob the blocker ', 'Alice the cat '];
+    const boolToOutcome = ['The blocker ', 'The cat '];
     return (
       <div>
         Thank you for playing. {boolToOutcome[+catEscaped]} won {winAmt} algos
