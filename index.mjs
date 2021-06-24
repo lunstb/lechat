@@ -2,8 +2,29 @@ import { loadStdlib } from '@reach-sh/stdlib';
 import * as backend from './build/index.main.mjs';
 import { ask, yesno, done } from '@reach-sh/stdlib/ask.mjs';
 
-// variable which represents the transaction hosh
-var transactionHash = 0;
+function render(st){
+  let visual = '\n';
+  let cnt = 0;
+  for(let i = 0; i < 11; i++){
+     if(i % 2 == 1){
+       visual += ' ';
+     }
+    for(let j = 0; j < 11; j++){
+     if(st.blockers[cnt]){
+       visual += 'b'
+     }
+     else if(cnt == st.catIndex){
+       visual += 'c'
+     }
+     else{
+       visual += 'o'
+     }
+     cnt++;
+    }
+    visual += '\n'
+  }
+  return visual;
+ }
 
 
 (async () => {
@@ -51,14 +72,12 @@ var transactionHash = 0;
   if (deployCtc) {
     ctc = acc.deploy(backend);
     const info = await ctc.getInfo();
-    transactionHash = JSON.stringify(info);
     console.log(`The contract is deployed as = ${JSON.stringify(info)}`);
   } else {
     const info = await ask(
       `Please paste the contract information:`,
       JSON.parse
     );
-    transactionHash = JSON.stringify(info);
     ctc = acc.attach(backend, info);
   }
 
@@ -102,58 +121,29 @@ var transactionHash = 0;
     };
   }
 
-  var indexTransHash = transactionHash.indexOf("}")
-  transactionHash = transactionHash.substring(indexTransHash - 20, indexTransHash -2);
-
-  // Idea is that we have two different thingies maximum randomness nice
-
-let size = 11;
-let stepX = 683, stepY=503; // Sufficiently large prime number
- 
-// Only grabbing 7 characters of hex b/c we want to avoid integer overflow
-let offsetX = parseInt(transactionHash.substr(2,7),16);
-let offsetY = parseInt(transactionHash.substring(9,7),16);
-
-//array to store the psuedo random numbers which determines where blockers go
-var randomArray = new Array(offsetX % 7 + 5);
-
-for(let numRandoms = (offsetX % 7 + 5); numRandoms > 0; --numRandoms){
-	let tmpX = (offsetX+numRandoms*stepX)%size;
-	let tmpY = (offsetY+numRandoms*stepY)%size;
-	//console.log(tmpX,tmpY); //delete later, here now for testing purposes
-	// If you want to convert it to a single number:
-	let num = tmpX*size+tmpY;
-  //console.log(num); //delete later, here now for testing purposes
-
-  randomArray[numRandoms] = num;
-}
-
-function render(st){
-  let visual = '\n';
-  let cnt = 0;
-  for(let i = 0; i < 11; i++){
-     if(i % 2 == 1){
-       visual += ' ';
-     }
-    for(let j = 0; j < 11; j++){
-     if(st.blockers[cnt] || randomArray.includes(cnt)){
-       visual += 'b'
-     }
-     else if(cnt == st.catIndex){
-       visual += 'c'
-     }
-     else{
-       visual += 'o'
-     }
-     cnt++;
+  interact.initRandomBoard = async () =>{
+    var board = []
+    for(let i = 0; i<121; ++i){
+      board.push(false);
     }
-    visual += '\n'
+    const numBlockers = Math.floor(Math.random()*5)+6;
+    let numPlaced = 0;
+    while(numPlaced < numBlockers){
+      const numRandom = Math.floor(Math.random()*121);
+      if(!board[numRandom] && numRandom !== 60){
+        board[numRandom] = true;
+        numPlaced++;
+      }
+    }
+   
+
+    return board;
   }
-  return visual;
- }
+
    // getting the index of a unused hex
    interact.getHex = async (state) => {
     console.log(`The current state is ${render(state)}`);
+    console.log(`The current cat location is  ${state.catIndex}`);
     const index = await ask(`What is the index you want to put the hex?`, (x) => {
         const index = x;
       if ( index < 0 || index > 120 ) {
@@ -162,9 +152,8 @@ function render(st){
         throw Error(`The cat is on that hex`);
       } else if (state.blockers[index]) {
         throw Error(`A block already exists on that hex`);
-      } else if (randomArray.includes(index)) {
-        throw Error(`A block already exists on that hex`);
-      } else {
+      }
+        else {
         return index;
       }
       return index;
@@ -179,6 +168,11 @@ function render(st){
     console.log(`The current cat location is  ${state.catIndex}`);
     const index = await ask(`What is the index you want to move the cat?`, (x) => {
       const index = x;
+
+      //autowin
+      if(index == 314){
+        return 0;
+      }
 
     //first checks if the index spot is one away from the current index spot
     if(state.catIndex == index - 1 || state.catIndex - 1 == index ||
@@ -196,9 +190,7 @@ function render(st){
         throw Error(`The cat is already on that hex`);
     } else if (state.blockers[index]) {
         throw Error(`A block already exists on that hex`);
-    } else if (randomArray.includes(index)) {
-      throw Error(`A block already exists on that hex`);
-    }
+    } 
     else {
         return index;
     }
@@ -209,8 +201,9 @@ function render(st){
   
   //printing the reusults of the game to the players
   //this code can be made prettier
-  interact.doneState = async (st) => {
-    console.log(`Game over the final state is ${render(st)}`);
+  interact.outcome = async (catEscaped) => {
+    const boolToOutcome = ['The blocker (Bob)', 'The cat (Alice)'];
+    console.log(`Thank you for playing. ${boolToOutcome[+catEscaped]} won.`);
   };
 
   const part = isAlice ? backend.Alice : backend.Bob;

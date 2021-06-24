@@ -9,14 +9,12 @@ const Board = Array(Bool, CELLS);
 const State = Object({catIndex: UInt, 
                       blockers: Board});
 
-const boardEmpty = Array.replicate(CELLS, false);
-
 const startCat = 60;
 
 //initializes the board
-const boardInit = () => ({
+const boardInit = (boardState) => ({
   catIndex: startCat,
-  blockers: boardEmpty,})
+  blockers: boardState,})
 
 
 // checks to see if the cat has escaped given its index
@@ -32,19 +30,20 @@ const catEscaped = (st) => {
 // Precondtion: cat must not be on the edge (escaped already)
 const catBlocked = (st) =>{
   require(!catEscaped(st));
-  
-  //checks if there are blocks ro the right, left, below, and above. todo fix
+  //the offsets which factor in which row 
+  const row = (st.catIndex - (st.catIndex % 11)) / 11;
+  const offsetA = row % 2;
+  const offsetB = (offsetA + 1) % 2;
+
+  //checks if there are blocks ro the right, left, below, and above.
   return st.blockers[st.catIndex - 1] && st.blockers[st.catIndex + 1] &&
-  st.blockers[st.catIndex - ROWS] && st.blockers[st.catIndex + ROWS] &&
-  st.blockers[st.catIndex - ROWS + 1] && st.blockers[st.catIndex + ROWS + 1];
+  st.blockers[st.catIndex - ROWS - offsetB] && st.blockers[st.catIndex + 10 + offsetA] &&
+  st.blockers[st.catIndex - 10 - offsetB] && st.blockers[st.catIndex + ROWS + offsetA ];
 }
 
 //makes sure the cat move is valid
 function getValidCatMove(interact, st){
-  //require(st.catIndex >= 0);
-  //require(st.catIndex <= 120);
   const _catMove = interact.getMove(st);
-  //todo, make sure the cat move is not on block or same spot. in array. adjust getMove
   return declassify(_catMove);
 }
 
@@ -52,14 +51,7 @@ function getValidCatMove(interact, st){
 function getValidBlockMove(interact, st){
   const _blockMove = interact.getHex(st);
   assume(_blockMove < 121);
-  //todo, make sure block move is within array, not on exisiting block or cat
   return declassify(_blockMove);
-}
-
-//gets the random block state
-function getRandomBlockState(interact,  st){
-  const _ranState = interact.randomBlockers(st);
-  return declassify(_ranState);
 }
 
 // applies the cat move to the board state
@@ -73,10 +65,7 @@ function applyCatMove(st, i){
 
 //applies the blocker move the board state
 function applyBlockerMove(st, m){
-  //require(!catEscaped(st));
   require(m < 121);
-  //require(st.blockers.length == 121);
-
   return {
     catIndex: st.catIndex,
     blockers: st.blockers.set(m, true),
@@ -91,7 +80,7 @@ function gameOver(st){
 //the player object
 const Player =
       { ...hasRandom,
-        doneState: Fun([State], Null),
+        outcome: Fun([Bool], Null),
         informTimeout: Fun([], Null),
         };
 
@@ -99,7 +88,8 @@ const Player =
 const Alice =
       { ...Player,
         getMove: Fun([State], UInt),
-        setWager: UInt};
+        setWager: UInt,
+        initRandomBoard: Fun([], Board) };
 
 //Bob the blocker
 const Bob =
@@ -108,6 +98,22 @@ const Bob =
         acceptWager: Fun([UInt], Null) };
 
 const DEADLINE = 10;
+
+// 1. Alice sets the wager
+//    a. Alice publishes the wager and pays it
+// 2. Alice sets the Board to a random board state
+//    a. Alices publishes the new board
+// 3. Bob accepets the wager and pays it before timing out
+// 4. The intial state of the game is initialized with Alice's random board
+// 5. While the game is not over (cat has not been blocked and not escaped) the game continues:
+//    a. Alice gets a cat move and publishes it to the blockchain
+//    b. The state of the board is updated with the new cat move
+//    c. Bob get a block move and publishes it to the blockchain
+//    d. The state of the board is updated with the new block move
+//    e. Loops
+// 6. Winner player gets payed two times the inital wager
+// 7. The outcome of the game is displayed to each of the players
+
 export const main =
   Reach.App(
     {},
@@ -119,45 +125,58 @@ export const main =
           interact.informTimeout(); }); };
 
       A.only(() => {
-        const wager = declassify(interact.setWager); });
+        // 1. Alice sets the wager
+        const wager = declassify(interact.setWager);
+        // 2. Alice sets the Board to a random board state
+        const boardState = declassify(interact.initRandomBoard());
+       });
+       // 1a. Alice publishes the wager and pays it
       A.publish(wager)
         .pay(wager);
       commit();
+       //    2a. Alices publishes the new board
+      A.publish(boardState);
+      commit();
 
       B.only(() => {
+        // 3. Bob accepets the wager and pays it before timing out
         interact.acceptWager(wager);
         });
       B.pay(wager)
         .timeout(DEADLINE, () => closeTo(A, informTimeout));
 
-        var state = boardInit();
+        // 4. The intial state of the game is initialized with Alice's random board
+        var state = boardInit(boardState);
         invariant(balance() == 2 * wager);
         
-        //game plays when cat has not escaped and not been blocked
+      // 5. While the game is not over (cat has not been blocked and not escaped) the game continues:
         while(!gameOver(state)){
           commit();
-      
          A.only(() => {
+          //5a. Alice gets a cat move and publishes it to the blockchain
            const catMove = getValidCatMove(interact, state); });
          A.publish(catMove);
          
+         // 5b. The state of the board is updated with the new cat move
          const state2 = applyCatMove(state, catMove);
          commit();
 
          B.only(() => {
+          // 5c. Bob get a block move and publishes it to the blockchain
           const blockMove = getValidBlockMove(interact, state2); });
         B.publish(blockMove);
         
+        // 5d. The state of the board is updated with the new block move
         state = applyBlockerMove(state2, blockMove);
         continue;
         }
-        //paying out the wagers
+        // 6. Winner player gets payed two times the inital wager
         assert(catEscaped(state) || catBlocked(state));
         const [toA, toB] = (catEscaped(state) ? [2, 0] : [0, 2])
         transfer(toA * wager).to(A);
         transfer(toB * wager).to(B);
         commit();
-      //displaying the outcome to both players
+      // 7. The outcome of the game is displayed to each of the players
       each([A, B], () => {
-        interact.doneState(state); });
+        interact.outcome(catEscaped(state)); });
       exit(); });
